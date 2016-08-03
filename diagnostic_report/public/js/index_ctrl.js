@@ -1,5 +1,6 @@
 var DiaReportController = angular.module('DiaReportController', ['ngMaterial',"ngAnimate","ngAria","mdPickers"]);
 
+
 DiaReportController.controller('defaultCtrl', function($scope, $http, $location, $mdDialog, $mdMedia, $mdToast){
 
 });
@@ -7,7 +8,7 @@ DiaReportController.controller('defaultCtrl', function($scope, $http, $location,
 DiaReportController.controller('rlistCtrl', function($scope, $http, $location, $mdDialog, $filter, $mdMedia, $mdToast){
   $scope.chosen_status="";
 	$scope.init = function(){
-		$http.get('/datas/all_report').success(function(data){
+		$http.get('http://fhirtest.uhn.ca/baseDstu2/DiagnosticReport?_count=100&_format=json&_summary=data').success(function(data){
       if(data.total == 0){
         console.log(data);
         return
@@ -28,7 +29,7 @@ DiaReportController.controller('rlistCtrl', function($scope, $http, $location, $
       targetEvent: ev,
       clickOutsideToClose:true,
       fullscreen: useFullScreen,
-      locals:{$http:$http, $filter:$filter, info:$scope.reports[index], isNew:false}
+      locals:{$http:$http, $filter:$filter, info:$scope.reports[index], isNew:false, $mdToast:$mdToast}
     }).then(function(ans){
 
     }, function(){
@@ -48,7 +49,7 @@ function formNewReport(order_data){
 		status:'registered',
 		category:'',
 		code:{coding:[]},
-		subject:{reference:order_data.subject.reference},
+		subject:{reference:order_data.subject},
     specimen:order_data.specimen,
 		effectiveDateTime:'',
 		issued:'',
@@ -68,15 +69,15 @@ function reportDataFormat(data){
 		var formated = {
 			id: item.id,
 			status:item.status,
-			category:item.category,
-			code:item.code,
-			subject: item.subject,
+			category:'category' in item ? item.category : {},
+			code:'code' in item? item.code : {},
+			subject: 'subject' in item ? item.subject : {},
 			effectiveDateTime:item.effectiveDateTime,
 			issued:item.issued,
-			performer:item.performer,
-      specimen:item.specimen,
-			request:item.request,
-			result:item.result,
+			performer:'performer'in item ?item.performer: {},
+      specimen: 'specimen' in item ? item.specimen :{},
+			request:'request' in item?item.request:[],
+			result:'result' in item ?item.result:[],
 			conclusion:item.conclusion
 		}
 		res.push(formated);
@@ -90,9 +91,9 @@ function orderDataFormat(data){
     var d = data[item];
     var formated = {
       id : d.id,
-      orderer : d.orderer.reference,
-      subject: d.subject.reference,
-      specimen: d.specimen,
+      orderer : 'orderer' in d ? d.orderer.reference:undefined,
+      subject: 'subject' in d? d.subject.reference :undefined,
+      specimen: 'specimen' in d? d.specimen:undefined,
       status: d.status,
       event: d.event,
       item: d.item,
@@ -106,7 +107,7 @@ function orderDataFormat(data){
 DiaReportController.controller('olistCtrl', function($scope, $http, $location, $mdDialog, $mdMedia, $mdToast, $filter){
 	$scope.chosen_status="";
   $scope.init = function(){
-     $http.get('/datas/all_order').success(function(data){
+     $http.get('http://fhirtest.uhn.ca/baseDstu2/DiagnosticOrder?_count=100&_format=json&_summary=data').success(function(data){
 			 var datas = data.entry.map(function(item){return item.resource});
 			 console.log(data.entry.map(function(item){return item.resource}));
        $scope.orders = orderDataFormat(datas);
@@ -136,7 +137,7 @@ DiaReportController.controller('olistCtrl', function($scope, $http, $location, $
 			targetEvent:ev,
 			clickOutsideToClose:true,
 			fullscreen:useFullScreen,
-			locals:{$http:$http, $filter:$filter, info:info, isNew:true}
+			locals:{$http:$http, $filter:$filter, info:info, isNew:true,$mdToast:$mdToast}
 		})
 	};
   $scope.showOrderDetail = function(ev, index){
@@ -148,7 +149,7 @@ DiaReportController.controller('olistCtrl', function($scope, $http, $location, $
       targetEvent: ev,
       clickOutsideToClose:true,
       fullscreen: useFullScreen,
-      locals:{$http:$http, $filter:$filter, info: $scope.orders[index], start_new: $scope.startNewReport, ev:ev, index:index}
+      locals:{$http:$http, $filter:$filter, info: $scope.orders[index], start_new: $scope.startNewReport, ev:ev, index:index, $mdToast:$mdToast}
     }).then(function(ans){
 
     }, function(){
@@ -162,7 +163,7 @@ DiaReportController.controller('olistCtrl', function($scope, $http, $location, $
   }
 });
 
-function reportDetailCtrl($scope, $mdDialog, $http, $filter, info, isNew){
+function reportDetailCtrl($scope, $mdDialog, $http, $filter, info, isNew, $mdToast){
   console.log(info);
 	$scope.info = info;
 	$scope.modified = info;
@@ -172,31 +173,52 @@ function reportDetailCtrl($scope, $mdDialog, $http, $filter, info, isNew){
 	$scope.hide = function(){
 		$mdDialog.hide();
 	}
-  $scope.effectDate = moment($scope.info.effectiveDateTime, moment.ISO_8601);
-  $scope.effectTime = moment($scope.info.effectiveDateTime, moment.ISO_8601);
-  $scope.issuedDate = moment($scope.info.issued, moment.ISO_8601);
-  $scope.issuedTime = moment($scope.info.issued, moment.ISO_8601);
+  if($scope.info.effectiveDateTime == ''){
+    $scope.effectDate = new Date();
+    $scope.effectTime = new Date();
+  }else{
+    $scope.effectDate = moment($scope.info.effectiveDateTime, moment.ISO_8601).toDate();
+    $scope.effectTime = moment($scope.info.effectiveDateTime, moment.ISO_8601).toDate();
+  }
+  if($scope.info.issuedDateTime == ''){
+    $scope.issuedDate = new Date();
+    $scope.issuedTime = new Date();
+  }else{
+    $scope.issuedDate = moment($scope.info.issued, moment.ISO_8601);
+    $scope.issuedTime = moment($scope.info.issued, moment.ISO_8601);
+  }
+
   $scope.init_data = function(){
+    // $scope.neweffec_date = new Date();
+		// $scope.neweffec_time = new Date();
+		// // process event date time
+    // if ($scope.info.effectiveDateTime != undefined){
+    //   var effectdatetime = $scope.info.effectiveDateTime;
+		// 	var time_obj = generate_datetime_obj(effectdatetime);
+    // }
+
+    showToast($mdToast, 'Retriving Data');
     var obs_raw_data = [];
     var subject_raw_data = [];
     var performer_raw_data = [];
-    $http.get('/datas/all?type=observationforgenetics').success(function(data){
+    var specimen_raw_data = [];
+    $http.get('http://fhirtest.uhn.ca/baseDstu2/Observation?_count=100&_format=json&_summary=data').success(function(data){
       var datas = data.entry.map(function(item){return item.resource;});
       Array.prototype.push.apply(obs_raw_data, datas);
       $scope.oid = observationFormat(obs_raw_data);
     });
-    $http.get('/datas/clinical?type=Patient').success(function(data){
+    $http.get('http://fhirtest.uhn.ca/baseDstu2/Patient?_count=100&_format=json&_summary=data').success(function(data){
       console.log(data);
       if('entry' in data){
         var datas = data.entry.map(function(item){return item.resource;});
         Array.prototype.push.apply(subject_raw_data, datas);
       }
-      $http.get('/datas/clinical?type=Group').success(function(data){
+      $http.get('http://fhirtest.uhn.ca/baseDstu2/Group?_count=100&_format=json&_summary=data').success(function(data){
         if('entry' in data){
           var datas = data.entry.map(function(item){return item.resource;});
           Array.prototype.push.apply(subject_raw_data, datas);
         }
-        $http.get('/datas/clinical?type=Device').success(function(data){
+        $http.get('http://fhirtest.uhn.ca/baseDstu2/Device?_count=100&_format=json&_summary=data').success(function(data){
           if('entry' in data){
             var datas = data.entry.map(function(item){return item.resource;});
             Array.prototype.push.apply(subject_raw_data, datas);
@@ -204,14 +226,22 @@ function reportDetailCtrl($scope, $mdDialog, $http, $filter, info, isNew){
           console.log(subject_raw_data);
           $scope.subjects = subjectFormat(subject_raw_data);
           console.log($scope.subjects);
+          showToast($mdToast, 'data retrived');
         });
       });
-      $http.get('/datas/clinical?type=Practitioner').success(function(data){
-        var datas = data.entry.map(function(item){return item.resource;});
-        Array.prototype.push.apply(performer_raw_data, datas);
-        console.log(performer_raw_data);
-        $scope.performers = performerFormat(performer_raw_data);
-      });
+    });
+    $http.get('http://fhirtest.uhn.ca/baseDstu2/Practitioner?_count=100&_format=json&_summary=data').success(function(data){
+      var datas = data.entry.map(function(item){return item.resource;});
+      Array.prototype.push.apply(performer_raw_data, datas);
+      console.log(performer_raw_data);
+      $scope.performers = performerFormat(performer_raw_data);
+    });
+    $http.get('http://fhirtest.uhn.ca/baseDstu2/Specimen?_count=100&_format=json&_summary=data').success(function(data){
+      var datas = data.entry.map(function(item){return item.resource;});
+      Array.prototype.push.apply(specimen_raw_data, datas);
+      console.log(specimen_raw_data);
+      $scope.specimens = specimenFormat(specimen_raw_data);
+      console.log($scope.specimens);
     });
   }
   $scope.init_data();
@@ -222,6 +252,10 @@ function reportDetailCtrl($scope, $mdDialog, $http, $filter, info, isNew){
 
   $scope.perselectedItemChange = function(new_item){
     $scope.info.performer.reference = new_item.reference;
+  }
+
+  $scope.speselectedItemChange = function(new_item){
+    $scope.info.specimen.reference = new_item.reference;
   }
 
   $scope.add_new_result = function(){
@@ -281,28 +315,31 @@ function reportDetailCtrl($scope, $mdDialog, $http, $filter, info, isNew){
       console.log(submit_form);
       var opt = {
         method:'POST',
-				url:'/datas/create_report',
-				data:{report:submit_form},
+				url:'http://fhirtest.uhn.ca/baseDstu2/DiagnosticReport',
+				data:submit_form,
 				headers:{'Content-Type':'application/json'}
       }
       $http(opt).success(function(data){
         console.log(data);
         console.log('created');
+        showToast($mdToast, 'Reporter Created');
+        $mdDialog.hide();
       })
     }else{
       console.log('submiting');
       var submit_form = $scope.form_submit_data();
       console.log(submit_form);
       var opt = {
-        method:'POST',
-  			data:{id:submit_form.id, report:submit_form},
+        method:'PUT',
+  			data:submit_form,
   			headers:{'Content-Type':'application/json'},
-  			url:'/datas/update_report'
+  			url:'http://fhirtest.uhn.ca/baseDstu2/DiagnosticReport/'+submit_form.id
       };
       $http(opt).success(function(data){
         console.log(data);
         console.log('updated');
-
+        showToast($mdToast, 'Reporter Updated');
+        $mdDialog.hide();
       });
     }
 
@@ -527,51 +564,182 @@ function createFilterFor(query) {
 
 function observationFormat(data){
 	var res = [];
+  // demo code
+  // res.push({
+  //   value:angular.lowercase('Jean Vean'),
+  //   display:'Jean Vean | complex |#1',
+  //   reference:'Observation/#121'
+  // });
+  // res.push({
+  //   value:angular.lowercase('Marry Chalmers'),
+  //   display:'Marry Chalmers | complex |#1',
+  //   reference:'Observation/#1'
+  // });
+  // res.push({
+  //   value:angular.lowercase('Marry Chalmers'),
+  //   display:'Marry Chalmers | complex | #2',
+  //   reference:'Observation/#2'
+  // });
+  // res.push({
+  //   value:angular.lowercase('Marry Chalmers'),
+  //   display:'Marry Chalmers | simple | #3',
+  //   reference:'Observation/#3'
+  // });
 	for(var index in data){
 		var item = data[index];
-		var category = 'text' in item.category ? item.category.text : '';
-		var desc = 'text' in item.code ? item.code.text : '';
+		var category = 'category' in item && 'text' in item.category ? item.category.text : '';
+		//var desc = 'text' in item.code ? item.code.text : '';
 		var id = item.id;
 		res.push({
-			value:angular.lowercase(desc + id),
-			display: category + ' | ' + desc +' | ' + id,
+			value:angular.lowercase(category + id),
+			display: category +' | ' + id,
       reference:item.resourceType+'/'+id
 		});
 	}
 	return res;
 }
 
+function get_obj_name(item){
+  //process name
+  if('name' in item){
+    if(typeof item.name != 'object'){
+      var name = item.name
+    }
+    else if(item.name.length != 0){
+      if('text' in item.name[0]){
+        var name = item.name[0].text;
+      }else{
+        var given_name = 'given' in item.name[0] ? item.name[0].given[0] : '';
+        var family_name = 'family' in item.name[0] ? item.name[0].family[0] : '';
+        var name = given_name + ' ' + family_name;
+      }
+    }else{
+      var name = '';
+    }
+  }else{
+    var name = '';
+  }
+  return name;
+}
+
 function subjectFormat(data){
   var res = [];
   for(var index in data){
     var item = data[index];
-    var given_name = 'given' in item.name ? item.name.given.join(' ') : '';
-    var family_name = 'family' in item.name ? item.name.family.join(' ') : '';
-    var name = given_name + ' ' + family_name;
+    //process name
+    var name = get_obj_name(item);
+    //var given_name = 'given' in item.name[0] ? item.name[0].given.join(' ') : '';
+    //var family_name = 'family' in item.name[0] ? item.name[0].family.join(' ') : '';
     var id = item.id
     res.push({
-      display: item.resourceType + '|' + name + ' ' + id,
-      value: angular.lowercase(item.resourceType + '|' + name + ' ' + id),
+      display: item.resourceType +'|' +name+ '/' + id,
+      value: angular.lowercase(item.resourceType+name+ id),
       reference: item.resourceType +'/'+id
     })
   }
   return res;
 }
 
+function specimenFormat(specimen_raw_data){
+  var res = [];
+  res.push({
+    display:'Venous blood specimen | specimen/14532',
+    value:angular.lowercase('Venous blood specimen'),
+    reference:'specimen/14532'
+  })
+  for(var index in specimen_raw_data){
+    var item = specimen_raw_data[index];
+    var id = item.id;
+    res.push({
+      display:'specimen/'+id,
+      value:angular.lowercase(id),
+      reference:'specimen/'+id
+    })
+  }
+  return res;
+}
 
 function performerFormat(data){
   var res = [];
   for(var index in data){
     var item = data[index];
     var id = item.id;
-    var given_name = 'given' in item.name ? item.name.given.join(' ') : '';
-    var family_name = 'family' in item.name ? item.name.family.join(' ') : '';
-    var name = given_name + ' ' + family_name;
+    if('name' in item){
+      if ('text' in item.name){
+        var name = item.name.text;
+      }else{
+        var given_name = 'given' in item.name ? item.name.given : '';
+        var family_name = 'family' in item.name ? item.name.family : '';
+        var name = given_name + ' ' + family_name;
+      }
+    }else{
+      var name = '';
+    }
+
+    //var given_name = 'given' in item.name[0] ? item.name[0].given.join(' ') : '';
+    //var family_name = 'family' in item.name[0] ? item.name[0].family.join(' ') : '';
     res.push({
-      display:item.resourceType+' | '+name+' '+id,
-      value:angular.lowercase(item.resourceType+' | '+name+' '+id),
+      display:item.resourceType+'/' + name + '/' +id,
+      value:angular.lowercase(item.resourceType+name+id),
       reference:item.resourceType+'/'+id
     });
   }
   return res;
+}
+
+var last = {
+    bottom: false,
+    top: true,
+    left: false,
+    right: true
+};
+
+var toastPosition = angular.extend({},last);
+
+function sanitizePosition() {
+	var current = toastPosition;
+	if ( current.bottom && last.top ) current.top = false;
+	if ( current.top && last.bottom ) current.bottom = false;
+	if ( current.right && last.left ) current.left = false;
+	if ( current.left && last.right ) current.right = false;
+	last = angular.extend({},current);
+}
+
+var getToastPosition = function() {
+    sanitizePosition();
+    return Object.keys(toastPosition)
+      .filter(function(pos) { return toastPosition[pos]; })
+      .join(' ');
+};
+
+function showToast($mdToast, msg){
+	var pinTo = getToastPosition();
+    var toast = $mdToast.simple()
+      .textContent(msg)
+      .highlightAction(true)
+      .position(pinTo);
+    $mdToast.show(toast).then(function(response) {
+      if ( response == 'ok' ) {
+      }
+    });
+}
+
+function generate_datetime_obj(timeStr){
+	// generate new time object
+	if(timeStr == ''){
+		var time_obj = moment();
+		return time_obj;
+	}
+	var time_obj = moment(timeStr, moment.ISO_8601);
+	return time_obj;
+}
+
+function formDatetimeStr(date_obj, time_obj){
+	// get datetime ISO str with date and time
+	var dtObj = moment(date_obj);
+	var time_mom_obj = moment(time_obj)
+	dtObj.hour(time_mom_obj.hour());
+	dtObj.minute(time_mom_obj.minute());
+	dtObj.second(time_mom_obj.second());
+	return dtObj.toISOString();
 }

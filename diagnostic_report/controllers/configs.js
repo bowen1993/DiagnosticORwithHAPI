@@ -1,6 +1,6 @@
 /* author: Bowen */
 var api_url = 'http://genomics-advisor.smartplatforms.org:2048/api';
-var client_id = '965879bb-8b8c-4a96-9958-8e0317bc6f30';
+var client_id = 'd28f9279-e111-4339-893a-18995a78a5c1';
 var auth_url = 'http://genomics-advisor.smartplatforms.org:2048/auth';
 var redirect_uri = 'http://localhost:8000/recv_redirect/';
 var client_secret = 'b1a1bf4c-4612-4a14-ba7b-93d2cf7fd620';
@@ -14,6 +14,8 @@ var clinical_auth_uri = 'https://authorize-dstu2.smarthealthit.org/api/oauth/aut
 var clinical_token_uri = 'https://authorize-dstu2.smarthealthit.org/api/oauth/token';
 var clinical_api_uri = 'https://fhir-api-dstu2.smarthealthit.org/api/';
 var clinical_state = 'eahub8';
+
+var HAPI_url = 'http://fhirtest.uhn.ca/baseDstu3';
 
 
 module.exports = {
@@ -31,5 +33,6 @@ module.exports = {
 	clinical_auth_uri:clinical_auth_uri,
 	clinical_token_uri:clinical_token_uri,
 	clinical_api_uri:clinical_api_uri,
-	clinical_state:clinical_state
+	clinical_state:clinical_state,
+	HAPI_url:HAPI_url
 }

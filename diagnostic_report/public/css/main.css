@@ -4,11 +4,21 @@ html, body{
   overflow: hidden;
 }
 
-body img.logo-img{
-  width: 100px;
-  margin: 10px;
+div.img-wrap{
+  margin:10px auto;
+  width:150px;
 }
 
+body img.logo-img{
+  width: 70px;
+  margin:20px;
+}
+
+
+md-toolbar h1{
+
+  text-transform: center;
+}
 div.out-board{
   height: 100%;
 }
