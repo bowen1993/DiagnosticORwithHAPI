@@ -14,7 +14,7 @@ CLINICAL = {
 }
 # OAuth2 settings for communicating with genomic server
 GENOMICS = {
-    'client_id': 'c9b6762c-fd94-4ea2-86e3-9ad5ac50e904',
+    'client_id': '72e79c01-b153-4656-8350-7d85761451b7',
     'redirect_uri': 'http://localhost:8000/recv_redirect/',
     'scopes': ['user/Sequence.read', 'user/Patient.read','user/Sequence.write'],
     'oauth_base': 'http://genomics-advisor.smartplatforms.org:8005/auth',
@@ -28,7 +28,7 @@ SECRET_KEY = 'hello, world!'
 GOOGLE_API_KEY = 'AIzaSyB01GeX_HiuZbHCkZ-P5hJ7yUHVkwFS07Q'
 
 CLIENT_ID ='e29fb523-1489-47bb-b163-39b5cae866e8'
-GENOMIC_ID = 'c9b6762c-fd94-4ea2-86e3-9ad5ac50e904'
+GENOMIC_ID = '72e79c01-b153-4656-8350-7d85761451b7'
 GENOMICSCOPE = [
 'user/Sequence.read',
 'user/Patient.read',
@@ -36,16 +36,12 @@ GENOMICSCOPE = [
 'user/Observation.read',
 'user/Specimen.read',
 'user/Practitioner.read',
-'user/Order.read',
-'user/Order.write',
-'user/orderforgenetics.read',
-'user/orderforgenetics.write',
-'user/observationforgenetics.read',
-'user/observationforgenetics.write',
+'user/DiagnosticRequest.read',
+'user/DiagnosticRequest.write',
+'user/Observation.read',
+'user/Observation.write',
 'user/Encounter.read',
-'user/Organization.read',
-'user/DiagnosticOrder.read',
-'user/DiagnosticOrder.write'
+'user/Organization.read'
 ]
 SCOPES = [
 'launch',
@@ -88,7 +84,7 @@ testJson = {
                                 }
                                 }
                                 ],
-                  "url": "http://hl7.org/fhir/StructureDefinition/diagnosticorder-geneticsItem"
+                  "url": "http://hl7.org/fhir/StructureDefinition/DiagnosticRequest-geneticsItem"
                   }
                   ],
     "subject": {

@@ -8,7 +8,7 @@ DiaReportController.controller('defaultCtrl', function($scope, $http, $location,
 DiaReportController.controller('rlistCtrl', function($scope, $http, $location, $mdDialog, $filter, $mdMedia, $mdToast){
   $scope.chosen_status="";
 	$scope.init = function(){
-		$http.get('http://fhirtest.uhn.ca/baseDstu2/DiagnosticReport?_count=100&_format=json&_summary=data').success(function(data){
+		$http.get('http://fhirtest.uhn.ca/baseDstu3/DiagnosticReport?_count=100&_format=json&_summary=data').success(function(data){
       if(data.total == 0){
         console.log(data);
         return
@@ -107,7 +107,7 @@ function orderDataFormat(data){
 DiaReportController.controller('olistCtrl', function($scope, $http, $location, $mdDialog, $mdMedia, $mdToast, $filter){
 	$scope.chosen_status="";
   $scope.init = function(){
-     $http.get('http://fhirtest.uhn.ca/baseDstu2/DiagnosticOrder?_count=100&_format=json&_summary=data').success(function(data){
+     $http.get('http://fhirtest.uhn.ca/baseDstu3/DiagnosticRequest?_count=100&_format=json&_summary=data').success(function(data){
 			 var datas = data.entry.map(function(item){return item.resource});
 			 console.log(data.entry.map(function(item){return item.resource}));
        $scope.orders = orderDataFormat(datas);
@@ -202,23 +202,23 @@ function reportDetailCtrl($scope, $mdDialog, $http, $filter, info, isNew, $mdToa
     var subject_raw_data = [];
     var performer_raw_data = [];
     var specimen_raw_data = [];
-    $http.get('http://fhirtest.uhn.ca/baseDstu2/Observation?_count=100&_format=json&_summary=data').success(function(data){
+    $http.get('http://fhirtest.uhn.ca/baseDstu3/Observation?_count=100&_format=json&_summary=data').success(function(data){
       var datas = data.entry.map(function(item){return item.resource;});
       Array.prototype.push.apply(obs_raw_data, datas);
       $scope.oid = observationFormat(obs_raw_data);
     });
-    $http.get('http://fhirtest.uhn.ca/baseDstu2/Patient?_count=100&_format=json&_summary=data').success(function(data){
+    $http.get('http://fhirtest.uhn.ca/baseDstu3/Patient?_count=100&_format=json&_summary=data').success(function(data){
       console.log(data);
       if('entry' in data){
         var datas = data.entry.map(function(item){return item.resource;});
         Array.prototype.push.apply(subject_raw_data, datas);
       }
-      $http.get('http://fhirtest.uhn.ca/baseDstu2/Group?_count=100&_format=json&_summary=data').success(function(data){
+      $http.get('http://fhirtest.uhn.ca/baseDstu3/Group?_count=100&_format=json&_summary=data').success(function(data){
         if('entry' in data){
           var datas = data.entry.map(function(item){return item.resource;});
           Array.prototype.push.apply(subject_raw_data, datas);
         }
-        $http.get('http://fhirtest.uhn.ca/baseDstu2/Device?_count=100&_format=json&_summary=data').success(function(data){
+        $http.get('http://fhirtest.uhn.ca/baseDstu3/Device?_count=100&_format=json&_summary=data').success(function(data){
           if('entry' in data){
             var datas = data.entry.map(function(item){return item.resource;});
             Array.prototype.push.apply(subject_raw_data, datas);
@@ -230,13 +230,13 @@ function reportDetailCtrl($scope, $mdDialog, $http, $filter, info, isNew, $mdToa
         });
       });
     });
-    $http.get('http://fhirtest.uhn.ca/baseDstu2/Practitioner?_count=100&_format=json&_summary=data').success(function(data){
+    $http.get('http://fhirtest.uhn.ca/baseDstu3/Practitioner?_count=100&_format=json&_summary=data').success(function(data){
       var datas = data.entry.map(function(item){return item.resource;});
       Array.prototype.push.apply(performer_raw_data, datas);
       console.log(performer_raw_data);
       $scope.performers = performerFormat(performer_raw_data);
     });
-    $http.get('http://fhirtest.uhn.ca/baseDstu2/Specimen?_count=100&_format=json&_summary=data').success(function(data){
+    $http.get('http://fhirtest.uhn.ca/baseDstu3/Specimen?_count=100&_format=json&_summary=data').success(function(data){
       var datas = data.entry.map(function(item){return item.resource;});
       Array.prototype.push.apply(specimen_raw_data, datas);
       console.log(specimen_raw_data);
@@ -315,7 +315,7 @@ function reportDetailCtrl($scope, $mdDialog, $http, $filter, info, isNew, $mdToa
       console.log(submit_form);
       var opt = {
         method:'POST',
-				url:'http://fhirtest.uhn.ca/baseDstu2/DiagnosticReport',
+				url:'http://fhirtest.uhn.ca/baseDstu3/DiagnosticReport',
 				data:submit_form,
 				headers:{'Content-Type':'application/json'}
       }
@@ -333,7 +333,7 @@ function reportDetailCtrl($scope, $mdDialog, $http, $filter, info, isNew, $mdToa
         method:'PUT',
   			data:submit_form,
   			headers:{'Content-Type':'application/json'},
-  			url:'http://fhirtest.uhn.ca/baseDstu2/DiagnosticReport/'+submit_form.id
+  			url:'http://fhirtest.uhn.ca/baseDstu3/DiagnosticReport/'+submit_form.id
       };
       $http(opt).success(function(data){
         console.log(data);

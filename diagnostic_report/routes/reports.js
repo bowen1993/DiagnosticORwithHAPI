@@ -18,7 +18,7 @@ var data = [
 	  },
 	  "contained": [
 	    {
-	      "resourceType": "DiagnosticOrder",
+	      "resourceType": "DiagnosticRequest",
 	      "id": "req",
 	      "subject": {
 	        "reference": "Patient/f001",
@@ -387,7 +387,7 @@ var data = [
 	  },
 	  "contained": [
 	    {
-	      "resourceType": "DiagnosticOrder",
+	      "resourceType": "DiagnosticRequest",
 	      "id": "req",
 	      "subject": {
 	        "reference": "Patient/f201",

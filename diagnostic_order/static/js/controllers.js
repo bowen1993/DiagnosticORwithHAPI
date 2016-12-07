@@ -6,7 +6,7 @@ DOController.controller('defaultCtrl', function($scope, $http, $location, $mdDia
 DOController.controller('MainListCtrl', function($scope, $http, $location, $mdDialog, $mdMedia, $mdToast, $filter, $q){
 	$scope.chosen_status="";
   $scope.init = function(){
-     $http.get('http://fhirtest.uhn.ca/baseDstu2/DiagnosticOrder?_count=100&_format=json&_summary=data').success(function(data){
+     $http.get('http://fhirtest.uhn.ca/baseDstu3/DiagnosticRequest?_count=100&_format=json&_summary=data').success(function(data){
 			 console.log(data);
 			 if('entry' in data){
 				 var datas = data.entry.map(function(item){return item.resource});
@@ -173,18 +173,18 @@ function orderDetailCtrl($scope, $mdDialog, $http, $filter, info, ev, index, $q,
 		var specimen_raw_data = [];
 		var event_actor_raw_data = [];
 		// get subjects data
-		$http.get('http://fhirtest.uhn.ca/baseDstu2/Patient?_count=100&_format=json&_summary=data').success(function(data){
+		$http.get('http://fhirtest.uhn.ca/baseDstu3/Patient?_count=100&_format=json&_summary=data').success(function(data){
       console.log(data);
       if('entry' in data){
         var datas = data.entry.map(function(item){return item.resource;});
         Array.prototype.push.apply(subject_raw_data, datas);
       }
-      $http.get('http://fhirtest.uhn.ca/baseDstu2/Group?_count=100&_format=json&_summary=data').success(function(data){
+      $http.get('http://fhirtest.uhn.ca/baseDstu3/Group?_count=100&_format=json&_summary=data').success(function(data){
         if('entry' in data){
           var datas = data.entry.map(function(item){return item.resource;});
           Array.prototype.push.apply(subject_raw_data, datas);
         }
-        $http.get('http://fhirtest.uhn.ca/baseDstu2/Device?_count=100&_format=json&_summary=data').success(function(data){
+        $http.get('http://fhirtest.uhn.ca/baseDstu3/Device?_count=100&_format=json&_summary=data').success(function(data){
           if('entry' in data){
             var datas = data.entry.map(function(item){return item.resource;});
             Array.prototype.push.apply(subject_raw_data, datas);
@@ -196,7 +196,7 @@ function orderDetailCtrl($scope, $mdDialog, $http, $filter, info, ev, index, $q,
     });
 		//subjects gained
 		//get orderer data
-		$http.get('http://fhirtest.uhn.ca/baseDstu2/Practitioner?_count=100&_format=json&_summary=data').success(function(data){
+		$http.get('http://fhirtest.uhn.ca/baseDstu3/Practitioner?_count=100&_format=json&_summary=data').success(function(data){
 			if('entry' in data){
 				var datas = data.entry.map(function(item){return item.resource;});
 				Array.prototype.push.apply(orderer_raw_data, datas);
@@ -205,7 +205,7 @@ function orderDetailCtrl($scope, $mdDialog, $http, $filter, info, ev, index, $q,
 		});
 		// orderers gained
 		//get encounter data
-		$http.get('http://fhirtest.uhn.ca/baseDstu2/Encounter?_count=100&_format=json&_summary=data').success(function(data){
+		$http.get('http://fhirtest.uhn.ca/baseDstu3/Encounter?_count=100&_format=json&_summary=data').success(function(data){
 			if('entry' in data){
 				var datas = data.entry.map(function(item){return item.resource;});
 				Array.prototype.push.apply(encounter_raw_data, datas);
@@ -214,7 +214,7 @@ function orderDetailCtrl($scope, $mdDialog, $http, $filter, info, ev, index, $q,
 		});
 		//encounters gained
 		//get supportingInformation data (Observation | Condition | DocumentReference)
-		$http.get('http://fhirtest.uhn.ca/baseDstu2/Observation?_count=100&_format=json&_summary=data').success(function(data){
+		$http.get('http://fhirtest.uhn.ca/baseDstu3/Observation?_count=100&_format=json&_summary=data').success(function(data){
 			if('entry' in data){
 				var datas = data.entry.map(function(item){return item.resource;});
 				Array.prototype.push.apply(supportig_raw_data, datas);
@@ -223,7 +223,7 @@ function orderDetailCtrl($scope, $mdDialog, $http, $filter, info, ev, index, $q,
 		});
 		//supportingInformations gained
 		// get specimen data
-		$http.get('http://fhirtest.uhn.ca/baseDstu2/Specimen?_count=100&_format=json&_summary=data').success(function(data){
+		$http.get('http://fhirtest.uhn.ca/baseDstu3/Specimen?_count=100&_format=json&_summary=data').success(function(data){
 			if('entry' in data){
 				var datas = data.entry.map(function(item){return item.resource;});
 				Array.prototype.push.apply(specimen_raw_data, datas);
@@ -232,12 +232,12 @@ function orderDetailCtrl($scope, $mdDialog, $http, $filter, info, ev, index, $q,
 		})
 		//specimens gained
 		// get event actor (Practitioner | Device)
-		$http.get('http://fhirtest.uhn.ca/baseDstu2/Practitioner?_count=100&_format=json&_summary=data').success(function(data){
+		$http.get('http://fhirtest.uhn.ca/baseDstu3/Practitioner?_count=100&_format=json&_summary=data').success(function(data){
 			if('entry' in data){
 				var datas = data.entry.map(function(item){return item.resource;});
 				Array.prototype.push.apply(event_actor_raw_data, datas);
 			}
-			$http.get('http://fhirtest.uhn.ca/baseDstu2/Device?_count=100&_format=json&_summary=data').success(function(data){
+			$http.get('http://fhirtest.uhn.ca/baseDstu3/Device?_count=100&_format=json&_summary=data').success(function(data){
 				if('entry' in data){
 					var datas = data.entry.map(function(item){return item.resource;});
 					Array.prototype.push.apply(event_actor_raw_data, datas);
@@ -356,7 +356,7 @@ function orderDetailCtrl($scope, $mdDialog, $http, $filter, info, ev, index, $q,
 			console.log('order submit');
 			var opt = {
 	        method:'POST',
-					url:'http://fhirtest.uhn.ca/baseDstu2/DiagnosticOrder/',
+					url:'http://fhirtest.uhn.ca/baseDstu3/DiagnosticRequest/',
 					data:$scope.formOrderJson(),
 					headers:{'Content-Type':'application/json'}
 	      };
@@ -370,7 +370,7 @@ function orderDetailCtrl($scope, $mdDialog, $http, $filter, info, ev, index, $q,
 			console.log('order submit');
 			var opt = {
 	        method:'PUT',
-					url:'http://fhirtest.uhn.ca/baseDstu2/DiagnosticOrder/'+$scope.info.id,
+					url:'http://fhirtest.uhn.ca/baseDstu3/DiagnosticRequest/'+$scope.info.id,
 					data:$scope.formOrderJson(),
 					headers:{'Content-Type':'application/json'}
 	      };
@@ -398,7 +398,7 @@ function orderDetailCtrl($scope, $mdDialog, $http, $filter, info, ev, index, $q,
 			delete $scope.info.event[index].description;
 		}
 		var order_json = {
-			resourceType:'DiagnosticOrder',
+			resourceType:'DiagnosticRequest',
 			status:$scope.info.status,
 			priority:$scope.info.priority,
 

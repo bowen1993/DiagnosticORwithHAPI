@@ -390,7 +390,7 @@ function get_page_data(){
            "valueCode" : "requested",
         },
       ],
-      "url": "http://hl7.org/fhir/StructureDefinition/diagnosticorder-geneticsItem",
+      "url": "http://hl7.org/fhir/StructureDefinition/DiagnosticRequest-geneticsItem",
     };
   }
 

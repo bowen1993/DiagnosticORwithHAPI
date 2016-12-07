@@ -27,7 +27,7 @@ router.get('/all', function(req, res, next){
 
 router.get('/all_order', function(req, res, next){
   console.log('get all order');
-  genomic_api_call.getAll('DiagnosticOrder' ,res);
+  genomic_api_call.getAll('DiagnosticRequest' ,res);
 });
 
 router.post('/update_report', function(req, res, next){

@@ -11,7 +11,7 @@ module.exports = router;
 
 var data = [
 	{
-	  "resourceType": "DiagnosticOrder",
+	  "resourceType": "DiagnosticRequest",
 	  "id": "ft4",
 	  "text": {
 	    "status": "generated",
@@ -92,7 +92,7 @@ var data = [
 	  ]
 	},
 	{
-	  "resourceType": "DiagnosticOrder",
+	  "resourceType": "DiagnosticRequest",
 	  "id": "di",
 	  "text": {
 	    "status": "generated",
@@ -141,7 +141,7 @@ var data = [
 	  ]
 	},
 	{
-	  "resourceType": "DiagnosticOrder",
+	  "resourceType": "DiagnosticRequest",
 	  "id": "example",
 	  "text": {
 	    "status": "generated",

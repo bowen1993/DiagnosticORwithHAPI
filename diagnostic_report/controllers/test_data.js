@@ -479,7 +479,7 @@ var report = {
 
 
 var order = {
-  "resourceType": "DiagnosticOrder",
+  "resourceType": "DiagnosticRequest",
   "id": "example",
   "text": {
     "status": "generated",
